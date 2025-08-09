@@ -1,0 +1,41 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+- workflow_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Unit and Integration tests
+      id: unit-and-integration-tests
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Unit and Integration tests
+        setup-command: ''
+        command: "./autograding/vitest"
+        timeout: 10
+        max-score: 70
+    - name: End to end tests
+      id: end-to-end-tests
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: End to end tests
+        setup-command: ''
+        command: "./autograding/e2e"
+        timeout: 10
+        max-score: 30
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        UNIT-AND-INTEGRATION-TESTS_RESULTS: "${{steps.unit-and-integration-tests.outputs.result}}"
+        END-TO-END-TESTS_RESULTS: "${{steps.end-to-end-tests.outputs.result}}"
+      with:
+        runners: unit-and-integration-tests,end-to-end-tests
