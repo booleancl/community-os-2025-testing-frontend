@@ -1,0 +1,9 @@
+:root {
+  --bs-body-bg: #121212;
+  --bs-body-color: #f8f9fa;
+  --bs-primary: #0d6efd;
+  --bs-secondary: #6c757d;
+}
+#map {
+  min-height: 300px;
+}
